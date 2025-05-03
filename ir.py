@@ -54,6 +54,7 @@ class Block(list):
 
 def bb_to_str(bb: Block, varprefix: str = "var"):
     def arg_to_str(arg: Value):
+        nonlocal varnames
         if isinstance(arg, Constant):
             return str(arg.value)
         else:
@@ -61,6 +62,7 @@ def bb_to_str(bb: Block, varprefix: str = "var"):
             # not a valid SSA basic block:
             # the variable must be defined before
             # its first use
+            assert arg in varnames
             return varnames[arg]
 
     varnames = {}
