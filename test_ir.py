@@ -90,3 +90,49 @@ v5 = add(v3, v4)"""
     # the printing will just number them in
     # sequence, can sometimes be a source of
     # confusion.
+
+
+def test_union_find():
+    # construct three operation, and unify them
+    # step by step
+    bb = Block()
+    a1 = bb.dummy(1)
+    a2 = bb.dummy(2)
+    a3 = bb.dummy(3)
+
+    # at the beginning, every op is its own
+    # representative, that means every
+    # operation is in a singleton set
+    # {a1} {a2} {a3}
+    assert a1.find() is a1
+    assert a2.find() is a2
+    assert a3.find() is a3
+
+    # now we unify a2 and a1, then the sets are
+    # {a1, a2} {a3}
+    a2.make_equal_to(a1)
+    # they both return a1 as the representative
+    assert a1.find() is a1
+    assert a2.find() is a1
+    # a3 is still different
+    assert a3.find() is a3
+
+    # now they are all in the same set {a1, a2, a3}
+    a3.make_equal_to(a2)
+    assert a1.find() is a1
+    assert a2.find() is a1
+    assert a3.find() is a1
+
+    # now they are still all the same, and we
+    # also learned that they are the same as the
+    # constant 6
+    # the single remaining set then is
+    # {6, a1, a2, a3}
+    c = Constant(6)
+    a2.make_equal_to(c)
+    assert a1.find() is c
+    assert a2.find() is c
+    assert a3.find() is c
+
+    # union with the same constant again is fine
+    a2.make_equal_to(c)

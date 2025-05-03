@@ -2,7 +2,12 @@ from typing import Optional, Any
 
 
 class Value:
-    pass
+    def find(self):
+        """Union-find"""
+        raise NotImplementedError
+
+    def _set_forwarded(self, value):
+        raise NotImplementedError
 
 
 class Constant(Value):
@@ -12,17 +17,50 @@ class Constant(Value):
     def __repr__(self):
         return f"Constant({self.value})"
 
+    def find(self):
+        return self
+
+    def _set_forwarded(self, value):
+        # if we found out that an Operation is
+        # equal to a constant, it's a compiler bug
+        # to find out that it's equal to another
+        # constant
+        assert isinstance(value, Constant) and \
+            value.value == self.value
+
 
 class Operation(Value):
     def __init__(self, name: str, args: list[Value]):
         self.name = name
         self.args = args
+        self._forwarded = None
 
     def __repr__(self):
-        return f"Operation({self.name}, {self.args})"
+        return f"Operation({self.name}, {self.args}, {self._forwarded})"
+
+    def find(self):
+        op = self 
+        while isinstance(op, Operation):
+            if op._forwarded is None:
+                return op
+            op = op._forwarded
+
+        return op
+
+    def _set_forwarded(self, value):
+        self._forwarded = value
 
     def arg(self, index: int):
-        return self.args[index]
+        return self.args[index].find()
+
+    def make_equal_to(self, value):
+        # this is "union" in the union-find sense,
+        # but the direction is important! The
+        # representative of the union of Operations
+        # must be either a Constant or an operation
+        # that we know for sure is not optimized
+        # away.
+        self.find()._set_forwarded(value)
 
 
 class Block(list):
