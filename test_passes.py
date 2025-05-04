@@ -18,7 +18,6 @@ optvar0 = getarg(0)
 optvar1 = add(9, optvar0)"""
 
 
-@pytest.mark.xfail
 def test_constfold_multifold():
     bb = Block()
     var0 = bb.getarg(0)
