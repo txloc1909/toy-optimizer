@@ -53,3 +53,22 @@ def cse(bb):
                 opt_bb.append(op)
 
     return opt_bb
+
+
+def strength_reduce(bb):
+    opt_bb = Block()
+
+    for op in bb:
+        match op.name:
+            case "add":
+                arg0, arg1 = op.arg(0), op.arg(1)
+                if arg0 is arg1:
+                    new_op = opt_bb.lshift(arg0, 1)
+                    op.make_equal_to(new_op)
+                    continue
+                else:
+                    opt_bb.append(op)
+            case _: # TODO: handle other ops
+                opt_bb.append(op)
+
+    return opt_bb

@@ -2,7 +2,7 @@ import pytest
 
 from ir import Value, Constant, Operation, Block
 from ir import bb_to_str
-from passes import constfold, cse
+from passes import constfold, cse, strength_reduce
 
 
 def test_constfold_simple():
@@ -47,3 +47,14 @@ optvar1 = getarg(1)
 optvar2 = add(optvar1, 17)
 optvar3 = mul(optvar0, optvar2)
 optvar4 = add(optvar3, optvar2)"""
+
+
+def test_strength_reduce():
+    bb = Block()
+    var0 = bb.getarg(0)
+    var1 = bb.add(var0, var0)
+
+    opt_bb = strength_reduce(bb)
+    assert bb_to_str(opt_bb, "optvar") == """\
+optvar0 = getarg(0)
+optvar1 = lshift(optvar0, 1)"""
