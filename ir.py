@@ -43,9 +43,10 @@ class Operation(Value):
         self.name = name
         self.args = args
         self._forwarded = None
+        self.info = None
 
     def __repr__(self):
-        return f"Operation({self.name}, {self.args}, {self._forwarded})"
+        return f"Operation({self.name}, {self.args}, {self._forwarded}, {self.info})"
 
     def __hash__(self):
         # NOTE: this is not so clean
@@ -101,6 +102,10 @@ class Block(list):
     getarg = opbuilder("getarg")
     dummy = opbuilder("dummy")
     lshift = opbuilder("lshift")
+    alloc = opbuilder("alloc")
+    load = opbuilder("load")
+    store = opbuilder("store")
+    print_ = opbuilder("print")
 
 
 def bb_to_str(bb: Block, varprefix: str = "var"):
