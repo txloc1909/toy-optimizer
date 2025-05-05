@@ -106,7 +106,7 @@ class Block(list):
     alloc = opbuilder("alloc")
     load = opbuilder("load")
     store = opbuilder("store")
-    print_ = opbuilder("print")
+    print = opbuilder("print")
 
 
 def bb_to_str(bb: Block, varprefix: str = "var") -> str:
