@@ -6,6 +6,7 @@ from passes import constfold, cse, strength_reduce
 
 
 def test_constfold_simple():
+    # TODO: parametrize this test on different ops
     bb = Block()
     var0 = bb.getarg(0)
     var1 = bb.add(5, 4)
@@ -32,6 +33,7 @@ optvar1 = add(19, optvar0)"""
 
 
 def test_cse_simple():
+    # TODO: parametrize this test on different ops
     bb = Block()
     a = bb.getarg(0)
     b = bb.getarg(1)
@@ -50,6 +52,7 @@ optvar4 = add(optvar3, optvar2)"""
 
 
 def test_strength_reduce():
+    # TODO: parametrize this test on different ops
     bb = Block()
     var0 = bb.getarg(0)
     var1 = bb.add(var0, var0)
