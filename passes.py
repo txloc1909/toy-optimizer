@@ -1,7 +1,7 @@
 from ir import Value, Constant, Operation, Block
 
 
-def constfold(bb):
+def constfold(bb: Block) -> Block:
     opt_bb = Block()
 
     for op in bb:
@@ -35,7 +35,7 @@ def constfold(bb):
 
 
 
-def cse(bb):
+def cse(bb: Block) -> Block:
     """Common Subexpression Elimination"""
     opt_bb = Block()
 
@@ -64,7 +64,7 @@ def cse(bb):
     return opt_bb
 
 
-def strength_reduce(bb):
+def strength_reduce(bb: Block) -> Block:
     opt_bb = Block()
 
     for op in bb:

@@ -22,14 +22,14 @@ class Constant(Value):
 
     def __eq__(self, other):
         if not isinstance(other, Constant):
-            return super().__eq__(self, other)
+            return super().__eq__(other)
 
         return self.value == other.value
 
     def find(self):
         return self
 
-    def _set_forwarded(self, value):
+    def _set_forwarded(self, value: Value):
         # if we found out that an Operation is
         # equal to a constant, it's a compiler bug
         # to find out that it's equal to another
@@ -40,10 +40,10 @@ class Constant(Value):
 
 class Operation(Value):
     def __init__(self, name: str, args: list[Value]):
-        self.name = name
-        self.args = args
-        self._forwarded = None
-        self.info = None
+        self.name: str = name
+        self.args: list[Value] = args
+        self._forwarded: Optional[Value] = None
+        self.info: Any = None
 
     def __repr__(self):
         return f"Operation({self.name}, {self.args}, {self._forwarded}, {self.info})"
@@ -52,8 +52,8 @@ class Operation(Value):
         # NOTE: this is not so clean
         return hash((self.name, id(self.args), self._forwarded))
 
-    def find(self):
-        op = self 
+    def find(self) -> Value:
+        op: Value = self 
         while isinstance(op, Operation):
             if op._forwarded is None:
                 return op
@@ -61,13 +61,13 @@ class Operation(Value):
 
         return op
 
-    def _set_forwarded(self, value):
+    def _set_forwarded(self, value: Value):
         self._forwarded = value
 
     def arg(self, index: int):
         return self.args[index].find()
 
-    def make_equal_to(self, value):
+    def make_equal_to(self, value: Value):
         # this is "union" in the union-find sense,
         # but the direction is important! The
         # representative of the union of Operations
@@ -78,6 +78,8 @@ class Operation(Value):
 
 
 class Block(list):
+
+    @staticmethod
     def opbuilder(opname):
 
         def wraparg(arg):
@@ -96,7 +98,6 @@ class Block(list):
 
         return build
 
-    # a bunch of operations we support
     add = opbuilder("add")
     mul = opbuilder("mul")
     getarg = opbuilder("getarg")
@@ -108,20 +109,15 @@ class Block(list):
     print_ = opbuilder("print")
 
 
-def bb_to_str(bb: Block, varprefix: str = "var"):
+def bb_to_str(bb: Block, varprefix: str = "var") -> str:
     def arg_to_str(arg: Value):
-        nonlocal varnames
         if isinstance(arg, Constant):
             return str(arg.value)
         else:
-            # the key must exist, otherwise it's
-            # not a valid SSA basic block:
-            # the variable must be defined before
-            # its first use
-            assert arg in varnames
+            assert arg in varnames, "Basic block not valid"
             return varnames[arg]
 
-    varnames = {}
+    varnames: dict[Value, str] = {}
     res = []
     for index, op in enumerate(bb):
         # give the operation a name used while
