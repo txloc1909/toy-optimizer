@@ -2,6 +2,9 @@ from typing import Optional, Any
 
 
 class Value:
+    def __eq__(self, other):
+        return self is other
+
     def find(self):
         """Union-find"""
         raise NotImplementedError
@@ -16,6 +19,12 @@ class Constant(Value):
 
     def __repr__(self):
         return f"Constant({self.value})"
+
+    def __eq__(self, other):
+        if not isinstance(other, Constant):
+            return super().__eq__(self, other)
+
+        return self.value == other.value
 
     def find(self):
         return self
@@ -37,6 +46,10 @@ class Operation(Value):
 
     def __repr__(self):
         return f"Operation({self.name}, {self.args}, {self._forwarded})"
+
+    def __hash__(self):
+        # NOTE: this is not so clean
+        return hash((self.name, id(self.args), self._forwarded))
 
     def find(self):
         op = self 
