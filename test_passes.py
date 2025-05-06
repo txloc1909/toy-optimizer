@@ -150,3 +150,18 @@ def test_materialize_constant():
 
     opt_bb = alloc_removal(bb)
     assert bb_to_str(opt_bb, "optvar") == bb_to_str(bb, "optvar")
+
+
+def test_materialize_fields():
+    bb = Block()
+    var0 = bb.getarg(0)
+    var1 = bb.getarg(1)
+    obj = bb.alloc()
+    field1 = bb.store(obj, 0, Constant(42))
+    field2 = bb.store(obj, 1, var1)
+    sto = bb.store(var0, 0, obj)
+
+    opt_bb = alloc_removal(bb)
+
+    # the two stores to obj should be kept
+    assert bb_to_str(opt_bb, "optvar") == bb_to_str(bb, "optvar")
