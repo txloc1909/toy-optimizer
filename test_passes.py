@@ -3,6 +3,8 @@ import pytest
 from ir import Value, Constant, Operation, Block
 from ir import bb_to_str
 from passes import constfold, cse, strength_reduce
+from passes import alloc_removal
+from interpret import interpret
 
 
 def test_constfold_simple():
@@ -61,3 +63,18 @@ def test_strength_reduce():
     assert bb_to_str(opt_bb, "optvar") == """\
 optvar0 = getarg(0)
 optvar1 = lshift(optvar0, 1)"""
+
+
+def test_remove_unused_allocation_1():
+    bb = Block()
+    var0 = bb.getarg(0)
+    obj = bb.alloc()        
+    sto = bb.store(obj, 0, var0)
+    var1 = bb.load(obj, 0) 
+    bb.print(var1)
+
+    opt_bb = alloc_removal(bb)
+    assert interpret(bb, 42) == interpret(opt_bb, 42)
+    assert bb_to_str(opt_bb, "optvar") == """\
+optvar0 = getarg(0)
+optvar1 = print(optvar0)"""

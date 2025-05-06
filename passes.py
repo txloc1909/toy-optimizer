@@ -84,3 +84,7 @@ def strength_reduce(bb: Block) -> Block:
                 opt_bb.append(op)
 
     return opt_bb
+
+
+def alloc_removal(bb: Block) -> Block:
+    return bb
