@@ -96,9 +96,9 @@ def _materialize(bb: Block, value) -> Block:
     if info is None: # already materialized
         return 
 
-    assert isinstance(info, VirtualObj)
-    assert value.name == "alloc"
     bb.append(value)
+    for i, val in info.content.items():
+        bb.store(value, i, val)
     value.info = None
 
 
