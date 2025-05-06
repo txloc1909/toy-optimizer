@@ -87,6 +87,14 @@ def strength_reduce(bb: Block) -> Block:
     return opt_bb
 
 
+def _materialize(bb: Block, op: Operation) -> Block:
+    assert isinstance(op, Operation)
+    info = op.info
+    assert isinstance(info, VirtualObj)
+    assert op.name == "alloc"
+    bb.append(op)
+
+
 def alloc_removal(bb: Block) -> Block:
     opt_bb = Block()
 
@@ -96,13 +104,17 @@ def alloc_removal(bb: Block) -> Block:
                 op.info = VirtualObj()
             case "load":
                 info = op.arg(0).info
-                field = get_num(op)
+                field = get_num(op, 1)
                 op.make_equal_to(info.load(field))
             case "store":
                 info = op.arg(0).info
-                field = get_num(op, 1)
-                value = op.arg(2)
-                info.store(field, value)
+                if info is not None: # virtual object
+                    field = get_num(op, 1)
+                    value = op.arg(2)
+                    info.store(field, value)
+                else:
+                    _materialize(opt_bb, op.arg(2))
+                    opt_bb.append(op)
             case _:
                 opt_bb.append(op)
 

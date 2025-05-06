@@ -65,7 +65,7 @@ optvar0 = getarg(0)
 optvar1 = lshift(optvar0, 1)"""
 
 
-def test_remove_unused_allocation_1():
+def test_remove_unused_allocation():
     bb = Block()
     var0 = bb.getarg(0)
     obj = bb.alloc()        
