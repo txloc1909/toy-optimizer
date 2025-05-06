@@ -99,3 +99,17 @@ def test_remove_multiple_nested_allocations():
     assert bb_to_str(opt_bb, "optvar") == """\
 optvar0 = getarg(0)
 optvar1 = print(optvar0)"""
+
+
+def test_materialize():
+    bb = Block()
+    var0 = bb.getarg(0)
+    obj = bb.alloc()        
+    sto = bb.store(var0, 0, obj)
+
+    opt_bb = alloc_removal(bb)
+
+    assert bb_to_str(opt_bb, "optvar") == """\
+optvar0 = getarg(0)
+optvar1 = alloc()
+optvar2 = store(optvar0, 0, optvar1)"""

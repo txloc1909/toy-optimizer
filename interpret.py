@@ -17,6 +17,8 @@ class Obj:
 
 
 class VirtualObj: 
+    """Placeholder for objects whose allocation is removed"""
+
     def __init__(self):
         self.content: dict[int, Value] = {}
 
