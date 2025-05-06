@@ -109,10 +109,8 @@ def test_materialize():
 
     opt_bb = alloc_removal(bb)
 
-    assert bb_to_str(opt_bb, "optvar") == """\
-optvar0 = getarg(0)
-optvar1 = alloc()
-optvar2 = store(optvar0, 0, optvar1)"""
+    # allocation of obj should be kept
+    assert bb_to_str(opt_bb, "optvar") == bb_to_str(bb, "optvar")
 
 
 def test_dont_materialize_twice():
@@ -142,10 +140,7 @@ def test_materialize_non_virtuals():
 
     # both var0 and var1 are not virtuals,
     # so there should be no materialization
-    assert bb_to_str(opt_bb, "optvar") == """\
-optvar0 = getarg(0)
-optvar1 = getarg(1)
-optvar2 = store(optvar0, 0, optvar1)"""
+    assert bb_to_str(opt_bb, "optvar") == bb_to_str(bb, "optvar")
 
 
 def test_materialize_constant():
@@ -154,6 +149,4 @@ def test_materialize_constant():
     sto = bb.store(var0, 0, Constant(42))
 
     opt_bb = alloc_removal(bb)
-    assert bb_to_str(opt_bb, "optvar") == """\
-optvar0 = getarg(0)
-optvar1 = store(optvar0, 0, 42)"""
+    assert bb_to_str(opt_bb, "optvar") == bb_to_str(bb, "optvar")
