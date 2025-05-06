@@ -87,15 +87,19 @@ def strength_reduce(bb: Block) -> Block:
     return opt_bb
 
 
-def _materialize(bb: Block, op: Operation) -> Block:
-    assert isinstance(op, Operation)
-    info = op.info
+def _materialize(bb: Block, value) -> Block:
+    if isinstance(value, Constant):
+        return
+
+    assert isinstance(value, Operation)
+    info = value.info
     if info is None: # already materialized
         return 
+
     assert isinstance(info, VirtualObj)
-    assert op.name == "alloc"
-    bb.append(op)
-    op.info = None
+    assert value.name == "alloc"
+    bb.append(value)
+    value.info = None
 
 
 def alloc_removal(bb: Block) -> Block:
