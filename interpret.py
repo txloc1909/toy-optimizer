@@ -16,6 +16,17 @@ class Obj:
         return self.content[idx]
 
 
+class VirtualObj: 
+    def __init__(self):
+        self.content: dict[int, Value] = {}
+
+    def store(self, idx: int, value: Value):
+        self.content[idx] = value
+
+    def load(self, idx: int) -> Value:
+        return self.content[idx]
+
+
 def _get_num(op, idx: int = 1) -> Any:
     assert isinstance(op.arg(idx), Constant)
     return op.arg(idx).value

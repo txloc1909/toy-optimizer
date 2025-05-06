@@ -1,5 +1,7 @@
 from ir import Value, Constant, Operation, Block
 
+from interpret import Obj, VirtualObj, _get_num
+
 
 def constfold(bb: Block) -> Block:
     opt_bb = Block()
@@ -87,4 +89,22 @@ def strength_reduce(bb: Block) -> Block:
 
 
 def alloc_removal(bb: Block) -> Block:
-    return bb
+    opt_bb = Block()
+
+    for op in bb:
+        match op.name:
+            case "alloc":
+                op.info = VirtualObj()
+            case "load":
+                info = op.arg(0).info
+                field = _get_num(op)
+                op.make_equal_to(info.load(field))
+            case "store":
+                info = op.arg(0).info
+                field = _get_num(op, 1)
+                value = op.arg(2)
+                info.store(field, value)
+            case _:
+                opt_bb.append(op)
+
+    return opt_bb
