@@ -1,6 +1,5 @@
 from ir import Value, Constant, Operation, Block
-
-from interpret import Obj, VirtualObj, _get_num
+from interpret import Obj, VirtualObj, get_num, argval
 
 
 def constfold(bb: Block) -> Block:
@@ -97,11 +96,11 @@ def alloc_removal(bb: Block) -> Block:
                 op.info = VirtualObj()
             case "load":
                 info = op.arg(0).info
-                field = _get_num(op)
+                field = get_num(op)
                 op.make_equal_to(info.load(field))
             case "store":
                 info = op.arg(0).info
-                field = _get_num(op, 1)
+                field = get_num(op, 1)
                 value = op.arg(2)
                 info.store(field, value)
             case _:

@@ -27,33 +27,33 @@ class VirtualObj:
         return self.content[idx]
 
 
-def _get_num(op, idx: int = 1) -> Any:
+def get_num(op, idx: int = 1) -> Any:
     assert isinstance(op.arg(idx), Constant)
     return op.arg(idx).value
 
 
+def argval(op, i):
+    arg = op.arg(i)
+    if isinstance(arg, Constant):
+        return arg.value
+    else:
+        assert isinstance(arg, Operation) 
+        return arg.info
+
+
 def interpret(bb: Block, *args) -> Any:
-
-    def argval(op, i):
-        arg = op.arg(i)
-        if isinstance(arg, Constant):
-            return arg.value
-        else:
-            assert isinstance(arg, Operation) 
-            return arg.info
-
     for idx, op in enumerate(bb):
         match op.name:
             case "getarg":
-                op.info = args[_get_num(op, 0)]
+                op.info = args[get_num(op, 0)]
             case "alloc":
                 op.info = Obj()
             case "load":
-                field_num = _get_num(op)
+                field_num = get_num(op)
                 op.info = argval(op, 0).load(field_num)
             case "store":
                 obj = argval(op, 0)
-                field_num = _get_num(op, 1)
+                field_num = get_num(op, 1)
                 field_val = argval(op, 2)
                 obj.store(field_num, field_val)
             case "print":
