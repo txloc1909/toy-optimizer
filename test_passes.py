@@ -78,3 +78,21 @@ def test_remove_unused_allocation_1():
     assert bb_to_str(opt_bb, "optvar") == """\
 optvar0 = getarg(0)
 optvar1 = print(optvar0)"""
+
+
+def test_remove_two_allocations():
+    bb = Block()
+    var0 = bb.getarg(0)
+    obj1 = bb.alloc()        
+    obj2 = bb.alloc()        
+    sto1 = bb.store(obj1, 0, var0)
+    sto2 = bb.store(obj2, 0, obj1)
+    var1 = bb.load(obj2, 0) 
+    var2 = bb.load(var1, 0) 
+    bb.print(var2)
+
+    opt_bb = alloc_removal(bb)
+    assert interpret(bb, 42) == interpret(opt_bb, 42)
+    assert bb_to_str(opt_bb, "optvar") == """\
+optvar0 = getarg(0)
+optvar1 = print(optvar0)"""
