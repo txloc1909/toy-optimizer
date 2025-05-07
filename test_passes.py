@@ -207,3 +207,16 @@ optvar4 = store(optvar1, 0, optvar2)
 optvar5 = store(optvar0, 0, optvar1)
     """
     assert bb_to_str(opt_bb, "optvar") == expected.strip()
+
+
+def test_materialize_obj_cycle():
+    bb = Block()
+    var0 = bb.getarg(0)
+    var1 = bb.alloc()
+    var2 = bb.store(var1, 0, var1) # cycle!
+    var3 = bb.store(var0, 1, var1)
+
+    opt_bb = alloc_removal(bb)
+
+    # var1 mustn't escape
+    assert bb_to_str(opt_bb, "optvar") == bb_to_str(bb, "optvar")
