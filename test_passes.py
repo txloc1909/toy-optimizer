@@ -15,10 +15,11 @@ def test_constfold_simple():
     var2 = bb.add(var1, var0)
 
     opt_bb = constfold(bb)
-    print(bb_to_str(opt_bb, "optvar"))
-    assert bb_to_str(opt_bb, "optvar") == """\
+    expected = """
 optvar0 = getarg(0)
-optvar1 = add(9, optvar0)"""
+optvar1 = add(9, optvar0)
+    """
+    assert bb_to_str(opt_bb, "optvar").strip() == expected.strip()
 
 
 def test_constfold_multifold():
@@ -29,9 +30,11 @@ def test_constfold_multifold():
     var3 = bb.add(var2, var0)
 
     opt_bb = constfold(bb)
-    assert bb_to_str(opt_bb, "optvar") == """\
+    expected = """
 optvar0 = getarg(0)
-optvar1 = add(19, optvar0)"""
+optvar1 = add(19, optvar0)
+    """
+    assert bb_to_str(opt_bb, "optvar").strip() == expected.strip()
 
 
 def test_cse_simple():
@@ -45,12 +48,15 @@ def test_cse_simple():
     var4 = bb.add(var2, var3)
 
     opt_bb = cse(bb)
-    assert bb_to_str(opt_bb, "optvar") == """\
+    expected = """
 optvar0 = getarg(0)
 optvar1 = getarg(1)
 optvar2 = add(optvar1, 17)
 optvar3 = mul(optvar0, optvar2)
-optvar4 = add(optvar3, optvar2)"""
+optvar4 = add(optvar3, optvar2)
+    """
+
+    assert bb_to_str(opt_bb, "optvar").strip() == expected.strip()
 
 
 def test_strength_reduce():
@@ -60,9 +66,12 @@ def test_strength_reduce():
     var1 = bb.add(var0, var0)
 
     opt_bb = strength_reduce(bb)
-    assert bb_to_str(opt_bb, "optvar") == """\
+
+    expected = """
 optvar0 = getarg(0)
-optvar1 = lshift(optvar0, 1)"""
+optvar1 = lshift(optvar0, 1)
+    """
+    assert bb_to_str(opt_bb, "optvar").strip() == expected.strip()
 
 
 def test_remove_unused_allocation():
@@ -74,10 +83,12 @@ def test_remove_unused_allocation():
     bb.print(var1)
 
     opt_bb = alloc_removal(bb)
-    assert interpret(bb, 42) == interpret(opt_bb, 42)
-    assert bb_to_str(opt_bb, "optvar") == """\
+    expected = """
 optvar0 = getarg(0)
-optvar1 = print(optvar0)"""
+optvar1 = print(optvar0)
+    """
+    assert interpret(bb, 42) == interpret(opt_bb, 42)
+    assert bb_to_str(opt_bb, "optvar").strip() == expected.strip()
 
 
 def test_remove_multiple_nested_allocations():
@@ -95,10 +106,13 @@ def test_remove_multiple_nested_allocations():
     bb.print(var3)
 
     opt_bb = alloc_removal(bb)
-    assert interpret(bb, 42) == interpret(opt_bb, 42)
-    assert bb_to_str(opt_bb, "optvar") == """\
+    expected = """
 optvar0 = getarg(0)
-optvar1 = print(optvar0)"""
+optvar1 = print(optvar0)
+    """
+
+    assert interpret(bb, 42) == interpret(opt_bb, 42)
+    assert bb_to_str(opt_bb, "optvar").strip() == expected.strip()
 
 
 def test_materialize():
@@ -123,11 +137,13 @@ def test_dont_materialize_twice():
     opt_bb = alloc_removal(bb)
 
     # obj should be materialized only once
-    assert bb_to_str(opt_bb, "optvar") == """\
+    expected = """\
 optvar0 = getarg(0)
 optvar1 = alloc()
 optvar2 = store(optvar0, 0, optvar1)
-optvar3 = store(optvar0, 0, optvar1)"""
+optvar3 = store(optvar0, 0, optvar1)
+    """
+    assert bb_to_str(opt_bb, "optvar").strip() == expected.strip()
 
 
 def test_materialize_non_virtuals():
@@ -149,7 +165,10 @@ def test_materialize_constant():
     sto = bb.store(var0, 0, Constant(42))
 
     opt_bb = alloc_removal(bb)
-    assert bb_to_str(opt_bb, "optvar") == bb_to_str(bb, "optvar")
+
+    expected = bb_to_str(bb, "optvar")
+    result = bb_to_str(opt_bb, "optvar")
+    assert result == expected
 
 
 def test_materialize_fields():
