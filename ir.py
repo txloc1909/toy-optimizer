@@ -131,3 +131,34 @@ def bb_to_str(bb: Block, varprefix: str = "var") -> str:
         strop = f"{var} = {op.name}({arguments})"
         res.append(strop)
     return "\n".join(res)
+
+
+def check_dominance(bb: Block) -> bool:
+    """Definition of a variable must dominate its usage"""
+    # TODO: test this
+
+    defined = set()
+    for op in bb:
+        for j in len(op.args):
+            arg = op.arg(j)
+            if arg.find() not in defined: 
+                return False
+
+        defined.add(op.find())
+
+    return True
+
+
+def check_single_definition(bb: Block) -> bool:
+    """Each variable is defined exactly once"""
+    # TODO: test this
+
+    defined = set()
+    for op in bb:
+        var = op.find()
+        if var in defined:
+            return False
+
+        defined.add(var)
+
+    return True
