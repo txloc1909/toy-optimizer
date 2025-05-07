@@ -97,7 +97,8 @@ def _materialize(bb: Block, value) -> Block:
         return 
 
     bb.append(value)
-    for i, val in info.content.items():
+    for i, val in sorted(info.content.items()):
+        _materialize(bb, val)
         bb.store(value, i, val)
     value.info = None
 

@@ -206,4 +206,4 @@ optvar3 = store(optvar2, 0, 1337)
 optvar4 = store(optvar1, 0, optvar2)
 optvar5 = store(optvar0, 0, optvar1)
     """
-    assert bb_to_str(opt_bb, "optvar") == expected
+    assert bb_to_str(opt_bb, "optvar") == expected.strip()
