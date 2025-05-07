@@ -97,10 +97,10 @@ def _materialize(bb: Block, value) -> Block:
         return 
 
     bb.append(value)
+    value.info = None
     for i, val in sorted(info.content.items()):
         _materialize(bb, val)
         bb.store(value, i, val)
-    value.info = None
 
 
 def alloc_removal(bb: Block) -> Block:
