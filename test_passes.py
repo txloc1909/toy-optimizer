@@ -220,3 +220,56 @@ def test_materialize_obj_cycle():
 
     # var1 mustn't escape
     assert bb_to_str(opt_bb, "optvar") == bb_to_str(bb, "optvar")
+
+
+def test_load_non_virtual():
+    bb = Block()
+    var0 = bb.getarg(0)
+    var1 = bb.load(var0, 0) # this load will fail if non-virtual var1 is not handle correctly
+    bb.print(var1)
+
+    opt_bb = alloc_removal(bb)
+
+    assert interpret(bb, 42) == interpret(opt_bb, 42)
+    assert bb_to_str(opt_bb, "optvar") == bb_to_str(bb, "optvar")
+
+
+def test_materialize_on_other_ops():
+    bb = Block()
+    var0 = bb.getarg(0)
+    var0 = bb.alloc()
+    var1 = bb.print(var0)
+
+    opt_bb = alloc_removal(bb)
+    assert interpret(bb, 42) == interpret(opt_bb, 42)
+    assert bb_to_str(opt_bb, "optvar") == bb_to_str(bb, "optvar")
+
+
+def test_sink_allocation():
+    bb = Block()
+    var0 = bb.getarg(0)
+    var1 = bb.alloc()
+    var2 = bb.store(var1, 0, 123)
+    var3 = bb.store(var1, 1, 456)
+    var4 = bb.load(var1, 0)
+    var5 = bb.load(var1, 1)
+    var6 = bb.add(var4, var5)
+    var7 = bb.store(var1, 0, var6)
+    var8 = bb.store(var0, 1, var1)
+
+    opt_bb = alloc_removal(bb)
+    
+    # var4 is var2 and equivalent to a constant,
+    # var5 is var3 and equivalent to a constant
+    # so var{2,3,4,5} can be removed/constfolded;
+    # var7 & var8 still need to be materialized
+    expected = """
+optvar0 = getarg(0)
+optvar1 = add(123, 456)
+optvar2 = alloc()
+optvar3 = store(optvar2, 0, optvar1)
+optvar4 = store(optvar2, 1, 456)
+optvar5 = store(optvar0, 1, optvar2)
+    """
+
+    assert bb_to_str(opt_bb, "optvar").strip() == expected.strip()
