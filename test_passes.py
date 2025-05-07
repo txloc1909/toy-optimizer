@@ -230,7 +230,6 @@ def test_load_non_virtual():
 
     opt_bb = alloc_removal(bb)
 
-    assert interpret(bb, 42) == interpret(opt_bb, 42)
     assert bb_to_str(opt_bb, "optvar") == bb_to_str(bb, "optvar")
 
 

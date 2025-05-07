@@ -112,8 +112,12 @@ def alloc_removal(bb: Block) -> Block:
                 op.info = VirtualObj()
             case "load":
                 info = op.arg(0).info
-                field = get_num(op, 1)
-                op.make_equal_to(info.load(field))
+                if info is not None: # virtual object
+                    print(f"{info=}")
+                    field = get_num(op, 1)
+                    op.make_equal_to(info.load(field))
+                else:
+                    opt_bb.append(op)
             case "store":
                 info = op.arg(0).info
                 if info is not None: # virtual object
