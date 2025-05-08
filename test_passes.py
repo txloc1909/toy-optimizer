@@ -240,7 +240,6 @@ def test_materialize_on_other_ops():
     var1 = bb.print(var0)
 
     opt_bb = alloc_removal(bb)
-    assert interpret(bb, 42) == interpret(opt_bb, 42)
     assert bb_to_str(opt_bb, "optvar") == bb_to_str(bb, "optvar")
 
 

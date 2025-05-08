@@ -117,6 +117,8 @@ def alloc_removal(bb: Block) -> Block:
                     field = get_num(op, 1)
                     op.make_equal_to(info.load(field))
                 else:
+                    for arg in op.args:
+                        _materialize(opt_bb, arg.find())
                     opt_bb.append(op)
             case "store":
                 info = op.arg(0).info
@@ -125,9 +127,12 @@ def alloc_removal(bb: Block) -> Block:
                     value = op.arg(2)
                     info.store(field, value)
                 else:
-                    _materialize(opt_bb, op.arg(2))
+                    for arg in op.args:
+                        _materialize(opt_bb, arg.find())
                     opt_bb.append(op)
             case _:
+                for arg in op.args:
+                    _materialize(opt_bb, arg.find())
                 opt_bb.append(op)
 
     return opt_bb
