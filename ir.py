@@ -139,10 +139,8 @@ def check_dominance(bb: Block) -> bool:
 
     defined = set()
     for op in bb:
-        for j in len(op.args):
-            arg = op.arg(j)
-            if arg.find() not in defined: 
-                return False
+        if any(arg.find() not in defined for arg in op.args):
+            return False
 
         defined.add(op.find())
 

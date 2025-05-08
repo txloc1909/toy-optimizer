@@ -87,7 +87,7 @@ def strength_reduce(bb: Block) -> Block:
     return opt_bb
 
 
-def _materialize(bb: Block, value) -> Block:
+def _materialize(bb: Block, value: Value):
     if isinstance(value, Constant):
         return
 
