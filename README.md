@@ -6,3 +6,5 @@ Optimizer passes & interpreter for an SSA IR
 [Implementing a Toy Optimizer](https://pypy.org/posts/2022/07/toy-optimizer.html)
 
 [Allocation Removal in the Toy Optimizer](https://pypy.org/posts/2022/10/toy-optimizer-allocation-removal.html)
+
+[Abstract interpretation in the Toy Optimizer](https://pypy.org/posts/2024/07/toy-abstract-interpretation.html)
