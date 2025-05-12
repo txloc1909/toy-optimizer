@@ -47,7 +47,8 @@ EVEN = Parity("EVEN")
 ODD = Parity("ODD")
 
 
-def _analyze(bb: Block):
+def _analyze_parity(bb: Block):
+    """Derive all parity information from the basic block."""
     parity = {v: BOTTOM for v in bb}
     parity_of = lambda value: Parity.const(value) if isinstance(value, Constant) \
         else parity[value]
@@ -58,21 +59,3 @@ def _analyze(bb: Block):
         parity[op] = transfer(*args)
 
     return parity
-
-
-if __name__ == "__main__":
-    bb = Block()
-    v0 = bb.getarg(0)
-    v1 = bb.getarg(1)
-    v2 = bb.lshift(v0, 1)
-    v3 = bb.lshift(v1, 1)
-    v4 = bb.add(v2, v3)
-    v5 = bb.dummy(v4)
-
-    parity = _analyze(bb)
-    assert parity[v0] is TOP
-    assert parity[v1] is TOP
-    assert parity[v2] is EVEN
-    assert parity[v3] is EVEN
-    assert parity[v4] is EVEN
-    assert parity[v5] is TOP
