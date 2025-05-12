@@ -18,7 +18,7 @@ class Parity:
             return ODD
 
     def getarg(self):
-        return BOTTOM
+        return TOP
 
     def add(self, other):
         if self is BOTTOM or other is BOTTOM:
@@ -70,8 +70,8 @@ if __name__ == "__main__":
     v5 = bb.dummy(v4)
 
     parity = _analyze(bb)
-    assert parity[v0] is BOTTOM
-    assert parity[v1] is BOTTOM
+    assert parity[v0] is TOP
+    assert parity[v1] is TOP
     assert parity[v2] is EVEN
     assert parity[v3] is EVEN
     assert parity[v4] is EVEN
