@@ -59,3 +59,32 @@ def _analyze_parity(bb: Block):
         parity[op] = transfer(*args)
 
     return parity
+
+
+def simplify(bb: Block) -> Block:
+    """Simplify by removing redundant odd/even check"""
+    parity = {v: BOTTOM for v in bb}
+    parity_of = lambda value: Parity.const(value) if isinstance(value, Constant) \
+        else parity[value]
+    get_transfer = lambda op: getattr(Parity, op.name)(*(parity_of(arg.find()) for arg in op.args))
+
+    opt_bb = Block()
+    for op in bb:
+        match op.name:
+            case "bitand":
+                arg, mask = op.arg(0), op.arg(1)
+                if isinstance(mask, Constant) and mask.value == 1:
+                    if parity_of(arg) is ODD:
+                        op.make_equal_to(Constant(1))
+                        continue
+                    elif parity_of(arg) is EVEN:
+                        op.make_equal_to(Constant(0))
+                        continue
+                else: 
+                    opt_bb.append(op)
+                    parity[op] = get_transfer(op)
+            case _:
+                opt_bb.append(op)
+                parity[op] = get_transfer(op)
+
+    return opt_bb
