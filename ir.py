@@ -106,6 +106,7 @@ class Block(list):
     alloc = opbuilder("alloc")
     load = opbuilder("load")
     store = opbuilder("store")
+    bitand = opbuilder("bitand")
     print = opbuilder("print")
 
 
