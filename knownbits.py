@@ -35,12 +35,12 @@ class KnownBits:
         """check whether this instance contains the concrete int `value`"""
         return value & self.knowns == self.ones
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         if self.is_constant():
             return f"KnownBits.from_constant({self.ones})"
         return f"KnownBits({self.ones}, {self.unknowns})"
 
-    def __str__(self):
+    def __str__(self) -> str:
         res = []
         ones, unknowns = self.ones, self.unknowns
 
@@ -76,3 +76,36 @@ class KnownBits:
             res = ["0"]
 
         return "".join(reversed(res))
+
+    @classmethod 
+    def from_str(cls, s: str) -> "KnownBits":
+        """Construct instance from string
+        String starting with ...1 means all higher bits are 1, 
+        or ...? means all higher bits are unknowns.
+        Otherwise, assume higher bits are all 0.
+        """
+        if s.startswith("...?"):
+            ones, unknowns, start = 0, -1, 4
+        elif s.startswith("...1"):
+            ones, unknowns, start = -1, 0, 4
+        else: 
+            ones, unknowns, start = 0, 0, 0
+
+        for char in s[start:]:
+            ones <<= 1
+            unknowns <<= 1
+
+            if char == "1":
+                ones |= 1
+            elif char == "?":
+                unknowns |= 1
+            else:
+                assert char == "0"
+                pass # do nothing
+
+        return cls(ones=ones, unknowns=unknowns)
+
+    @classmethod
+    def all_unknown(cls) -> "KnownBits":
+        """Convenient constructor for 'all bits unknown' abstract value"""
+        return cls.from_str("...?")

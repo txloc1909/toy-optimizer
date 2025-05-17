@@ -10,12 +10,12 @@ def test_knownbits_to_str():
 
 
 def test_contains():
-    k1 = KnownBits(ones=0b101, unknowns=0b010)
+    k1 = KnownBits.from_str("1?1")
     assert k1.contains(0b111) 
     assert k1.contains(0b101)
     assert not k1.contains(0b110)
     assert not k1.contains(0b011)
 
-    k2 = KnownBits(ones=1, unknowns=~0b01) # all odds numbers
+    k2 = KnownBits.from_str("...?1") # all odds numbers
     for i in range(-101, 100):
         assert k2.contains(i) == (i % 2 == 1)
