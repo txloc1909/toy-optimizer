@@ -19,3 +19,13 @@ def test_contains():
     k2 = KnownBits.from_str("...?1") # all odds numbers
     for i in range(-101, 100):
         assert k2.contains(i) == (i % 2 == 1)
+
+
+def test_invert_simple():
+    k1 = KnownBits.from_str("01?01?01?")
+    k2 = ~k1
+    assert str(k2) == "...10?10?10?"
+
+    k1 = KnownBits.from_str("...?")
+    k2 = ~k1
+    assert str(k2) == "...?"

@@ -109,3 +109,6 @@ class KnownBits:
     def all_unknown(cls) -> "KnownBits":
         """Convenient constructor for 'all bits unknown' abstract value"""
         return cls.from_str("...?")
+
+    def __invert__(self):
+        return KnownBits(ones=self.zeros, unknowns=self.unknowns)
