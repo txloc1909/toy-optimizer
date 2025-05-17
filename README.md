@@ -20,3 +20,5 @@ A simple interpreter
 [Allocation Removal in the Toy Optimizer](https://pypy.org/posts/2022/10/toy-optimizer-allocation-removal.html)
 
 [Abstract interpretation in the Toy Optimizer](https://pypy.org/posts/2024/07/toy-abstract-interpretation.html)
+
+[A Knownbits Abstract Domain for the Toy Optimizer, Correctly](https://pypy.org/posts/2024/08/toy-knownbits.html)
