@@ -1,5 +1,23 @@
+from hypothesis import given, strategies, settings
+
 from knownbits import KnownBits
 
+
+_build_knownbits_and_contained_value = \
+    lambda concrete, unknown: (KnownBits(concrete & ~unknown, unknown), concrete)
+
+_random_knownbits_and_contained_value = strategies.builds(
+    _build_knownbits_and_contained_value,
+    strategies.integers(),
+    strategies.integers(),
+)
+
+_constant_knownbits = strategies.builds(
+    lambda value: (KnownBits.from_constant(value), value),
+    strategies.integers(),
+)
+
+_knownbits_and_contained_value = _random_knownbits_and_contained_value | _constant_knownbits
 
 def test_knownbits_to_str():
     assert str(KnownBits.from_constant(0)) == '0'
@@ -9,16 +27,10 @@ def test_knownbits_to_str():
     assert str(KnownBits(1, ~0b1)) == '...?1'
 
 
-def test_contains():
-    k1 = KnownBits.from_str("1?1")
-    assert k1.contains(0b111) 
-    assert k1.contains(0b101)
-    assert not k1.contains(0b110)
-    assert not k1.contains(0b011)
-
-    k2 = KnownBits.from_str("...?1") # all odds numbers
-    for i in range(-101, 100):
-        assert k2.contains(i) == (i % 2 == 1)
+@given(_knownbits_and_contained_value)
+def test_contains(t):
+    k, n = t
+    assert k.contains(n)
 
 
 def test_invert_simple():
