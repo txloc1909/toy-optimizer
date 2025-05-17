@@ -19,12 +19,21 @@ _constant_knownbits = strategies.builds(
 
 _knownbits_and_contained_value = _random_knownbits_and_contained_value | _constant_knownbits
 
+
 def test_knownbits_to_str():
     assert str(KnownBits.from_constant(0)) == '0'
     assert str(KnownBits.from_constant(5)) == '101'
     assert str(KnownBits(5, 0b010)) == '1?1'
     assert str(KnownBits(~0b1111, 0b10)) == '...100?0'
     assert str(KnownBits(1, ~0b1)) == '...?1'
+
+
+@given(_knownbits_and_contained_value)
+def test_str_roundtrip(t1):
+    k1, _ = t1
+    k2 = KnownBits.from_str(str(k1))
+    assert k1.ones == k2.ones
+    assert k1.unknowns == k2.unknowns
 
 
 @given(_knownbits_and_contained_value)
