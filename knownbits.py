@@ -110,7 +110,10 @@ class KnownBits:
         """Convenient constructor for 'all bits unknown' abstract value"""
         return cls.from_str("...?")
 
-    def __eq__(self, other: "KnownBits") -> bool:
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, KnownBits):
+            return NotImplemented
+
         return self.ones == other.ones and self.zeros == other.zeros \
             and self.unknowns == other.unknowns 
 
