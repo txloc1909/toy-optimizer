@@ -123,8 +123,11 @@ class KnownBits:
         knowns = zeros | ones
         return KnownBits(ones=ones, unknowns=~knowns)
 
-    def __or__(self, other):
-        raise NotImplementedError
+    def __or__(self, other) -> "KnownBits":
+        ones = self.ones | other.ones 
+        zeros = self.zeros & other.zeros
+        knowns = ones | zeros
+        return KnownBits(ones=ones, unknowns=~knowns)
 
     def __add__(self, other):
         raise NotImplementedError

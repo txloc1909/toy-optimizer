@@ -77,7 +77,7 @@ def test_hypothesis_and(t1, t2):
 def test_or_simple():
     k1       = KnownBits.from_str("01?01?01?")
     k2       = KnownBits.from_str("000111???")
-    expected = KnownBits.from_str("01?11??1?")
+    expected = KnownBits.from_str("01?111?1?")
     assert k1 | k2 == expected
 
 
