@@ -111,13 +111,17 @@ class KnownBits:
         return cls.from_str("...?")
 
     def __eq__(self, other: "KnownBits") -> bool:
-        return self.ones == other.ones and self.unknowns == other.unknowns 
+        return self.ones == other.ones and self.zeros == other.zeros \
+            and self.unknowns == other.unknowns 
 
     def __invert__(self):
         return KnownBits(ones=self.zeros, unknowns=self.unknowns)
 
-    def __and__(self, other):
-        raise NotImplementedError
+    def __and__(self, other) -> "KnownBits":
+        ones = self.ones & other.ones
+        zeros = self.zeros | other.zeros
+        knowns = zeros | ones
+        return KnownBits(ones=ones, unknowns=~knowns)
 
     def __or__(self, other):
         raise NotImplementedError
