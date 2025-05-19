@@ -1,4 +1,5 @@
 from hypothesis import given, strategies, settings
+import pytest
 
 from knownbits import KnownBits
 
@@ -50,3 +51,71 @@ def test_invert_simple():
     k1 = KnownBits.from_str("...?")
     k2 = ~k1
     assert str(k2) == "...?"
+
+
+@given(_knownbits_and_contained_value)
+def test_hypothesis_invert(t):
+    k1, n1 = t
+    k2, n2 = ~k1, ~n1
+    assert k2.contains(n2)
+
+
+def test_and_simple():
+    k1       = KnownBits.from_str("01?01?01?")
+    k2       = KnownBits.from_str("000111???")
+    expected = KnownBits.from_str("00001?0??")
+    assert k1 & k2 == expected
+
+
+@given(_knownbits_and_contained_value, _knownbits_and_contained_value)
+def test_hypothesis_and(t1, t2):
+    (k1, n1), (k2, n2) = t1, t2
+    k3, n3 = k1 & k2, n1 & n2
+    assert k3.contains(n3)
+
+
+def test_or_simple():
+    k1       = KnownBits.from_str("01?01?01?")
+    k2       = KnownBits.from_str("000111???")
+    expected = KnownBits.from_str("01?11??1?")
+    assert k1 | k2 == expected
+
+
+@given(_knownbits_and_contained_value, _knownbits_and_contained_value)
+def test_hypothesis_or(t1, t2):
+    (k1, n1), (k2, n2) = t1, t2
+    k3, n3 = k1 | k2, n1 | n2
+    assert k3.contains(n3)
+
+
+def test_add_simple():
+    k1       = KnownBits.from_str("0?10?10?10")
+    k2       = KnownBits.from_str("0???111000")
+    expected = KnownBits.from_str("?????01?10")
+    assert k1 + k2 == expected
+
+
+@given(_knownbits_and_contained_value, _knownbits_and_contained_value)
+def test_hypothesis_add(t1, t2):
+    (k1, n1), (k2, n2) = t1, t2
+    k3, n3 = k1 + k2, n1 + n2
+    assert k3.contains(n3)
+
+
+def test_sub_simple():
+    k1       = KnownBits.from_str("0?10?10?10")
+    k2       = KnownBits.from_str("0???111000")
+    expected = KnownBits.from_str("?????11?10")
+    assert k1 - k2 == expected
+
+    k1       = KnownBits.from_str(    "...1?10?10?10")
+    k2       = KnownBits.from_str("...10000???111000")
+    expected = KnownBits.from_str(    "111?????11?10")
+    assert k1 - k2 == expected
+
+
+@given(_knownbits_and_contained_value, _knownbits_and_contained_value)
+def test_hypothesis_sub(t1, t2):
+    (k1, n1), (k2, n2) = t1, t2
+    k3, n3 = k1 - k2, n1 - n2
+    assert k3.contains(n3)

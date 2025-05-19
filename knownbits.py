@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 
-@dataclass(eq=False)
+@dataclass
 class KnownBits:
     ones: int
     unknowns: int
@@ -110,5 +110,20 @@ class KnownBits:
         """Convenient constructor for 'all bits unknown' abstract value"""
         return cls.from_str("...?")
 
+    def __eq__(self, other: "KnownBits") -> bool:
+        return self.ones == other.ones and self.unknowns == other.unknowns 
+
     def __invert__(self):
         return KnownBits(ones=self.zeros, unknowns=self.unknowns)
+
+    def __and__(self, other):
+        raise NotImplementedError
+
+    def __or__(self, other):
+        raise NotImplementedError
+
+    def __add__(self, other):
+        raise NotImplementedError
+
+    def __sub__(self, other):
+        raise NotImplementedError
