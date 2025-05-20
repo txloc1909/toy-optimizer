@@ -105,7 +105,7 @@ def test_hypothesis_add(t1, t2):
 def test_sub_simple():
     k1       = KnownBits.from_str("0?10?10?10")
     k2       = KnownBits.from_str("0???111000")
-    expected = KnownBits.from_str("?????11?10")
+    expected = KnownBits.from_str( "...?11?10")
     assert k1 - k2 == expected
 
     k1       = KnownBits.from_str(    "...1?10?10?10")

@@ -132,8 +132,20 @@ class KnownBits:
         knowns = ones | zeros
         return KnownBits(ones=ones, unknowns=~knowns)
 
-    def __add__(self, other):
-        raise NotImplementedError
+    def __add__(self, other) -> "KnownBits":
+        # stolen from: https://github.com/torvalds/linux/blob/a5806cd506af5a7c19bcd596e4708b5c464bfd21/kernel/bpf/tnum.c#L62
+        sum_unknowns = self.unknowns + other.unknowns
+        sum_ones = self.ones + other.ones
+        all_carries = sum_ones + sum_unknowns 
+        ones_carries = all_carries ^ sum_ones
+        unknowns = self.unknowns | other.unknowns | ones_carries 
+        ones = sum_ones & ~unknowns
+        return KnownBits(ones, unknowns)
 
     def __sub__(self, other):
-        raise NotImplementedError
+        # stolen from: https://github.com/torvalds/linux/blob/a5806cd506af5a7c19bcd596e4708b5c464bfd21/kernel/bpf/tnum.c#L74
+        diff_ones = self.ones - other.ones
+        val_borrows = (diff_ones + self.unknowns) ^ (diff_ones - other.unknowns)
+        unknowns = self.unknowns | other.unknowns | val_borrows
+        ones = diff_ones & ~unknowns
+        return KnownBits(ones, unknowns)
