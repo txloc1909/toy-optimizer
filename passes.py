@@ -136,3 +136,9 @@ def alloc_removal(bb: Block) -> Block:
                 opt_bb.append(op)
 
     return opt_bb
+
+
+def optimize_load_store(bb: Block):
+    opt_bb = Block()
+    # TODO: implement
+    return opt_bb
