@@ -12,6 +12,7 @@ A simple interpreter
 3. Strength Reduction
 4. Allocation Removal
 5. Parity Analysis
+6. Load & store forwarding
 
 ## References
 
@@ -22,3 +23,5 @@ A simple interpreter
 [Abstract interpretation in the Toy Optimizer](https://pypy.org/posts/2024/07/toy-abstract-interpretation.html)
 
 [A Knownbits Abstract Domain for the Toy Optimizer, Correctly](https://pypy.org/posts/2024/08/toy-knownbits.html)
+
+[Load and store forwarding in the Toy Optimizer](https://pypy.org/posts/2025/12/toy-load-store.html)
