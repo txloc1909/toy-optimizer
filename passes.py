@@ -139,6 +139,27 @@ def alloc_removal(bb: Block) -> Block:
 
 
 def optimize_load_store(bb: Block):
+
+    def _get_num(op: Operation, index: int = 1):
+        assert isinstance(op.arg(index), Constant)
+        return op.arg(index).value
+
     opt_bb = Block()
-    # TODO: implement
+    # Stores thing we know about the heap at compile time...
+    # Key: an object and an offset pair, acting as a heap address
+    # Value: a previous SSA value we know exists at that address
+    compile_time_heap: Dict[Tuple(Value, int), Value] = {}
+    for op in bb: 
+        if op.name == "load":
+            obj = op.arg(0)
+            offset = _get_num(op, 1)
+            load_info = (obj, offset)
+            previous = compile_time_heap.get(load_info)
+            if previous is not None: 
+                op.make_equal_to(previous)
+                continue
+
+            compile_time_heap[load_info] = op
+
+        opt_bb.append(op)
     return opt_bb
