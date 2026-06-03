@@ -148,7 +148,9 @@ def optimize_load_store(bb: Block) -> Block:
     # Value: a prev SSA value we know exists at that address
     compile_time_heap: Dict[Tuple[Value, int], Value] = {}
     for op in bb: 
-        if op.name == "load":
+        if op.name == "store":
+            compile_time_heap.clear()   # invalidate all loads
+        elif op.name == "load":
             obj = op.arg(0)
             offset = get_num(op, 1)
             load_info = (obj, offset)
