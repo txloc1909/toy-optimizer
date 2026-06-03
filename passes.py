@@ -147,11 +147,20 @@ def optimize_load_store(bb: Block) -> Block:
     # Key: (object, offset) pair. Offset is address of obj 
     # Value: a prev SSA value we know exists at that address
     compile_time_heap: Dict[Tuple[Value, int], Value] = {}
+
+    def _eq_value(left: Value | None, right: Value) -> bool:
+        if isinstance(left, Constant) and isinstance(right, Constant):
+            return left.value == right.value
+        else:
+            return left is right
+
     for op in bb: 
         if op.name == "store":
             obj = op.arg(0)
             offset = get_num(op, 1)
             new_val = op.arg(2)
+            store_info = (obj, offset)
+            curr_val = compile_time_heap.get(store_info)
 
             # Re-model the heap 
             compile_time_heap = {
@@ -159,6 +168,9 @@ def optimize_load_store(bb: Block) -> Block:
                 for (obj, offset_), val in compile_time_heap.items() 
                 if offset_ != offset
             }
+
+            if _eq_value(curr_val, new_val):
+                continue
 
             # Update new info from store
             compile_time_heap[(obj, offset)] = new_val
