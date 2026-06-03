@@ -65,3 +65,24 @@ var4 = escape(var1)
     """
 
     assert bb_to_str(opt_bb).strip() == expected.strip()
+
+
+def test_load_after_store_removed():
+    bb = Block()
+    var0 = bb.getarg(0)
+    bb.store(var0, 0, 5)
+    var1 = bb.load(var0, 0)
+    var2 = bb.load(var0, 1)
+    bb.escape(var1)
+    bb.escape(var2)
+    opt_bb = optimize_load_store(bb)
+
+    expected = """
+var0 = getarg(0)
+var1 = store(var0, 0, 5)
+var2 = load(var0, 1)
+var3 = escape(5)
+var4 = escape(var2)
+    """
+
+    assert bb_to_str(opt_bb).strip() == expected.strip()
