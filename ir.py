@@ -108,6 +108,7 @@ class Block(list):
     store = opbuilder("store")
     bitand = opbuilder("bitand")
     print = opbuilder("print")
+    escape = opbuilder("escape")
 
 
 def bb_to_str(bb: Block, varprefix: str = "var") -> str:

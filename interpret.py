@@ -68,6 +68,8 @@ def interpret(bb: Block, *args) -> Any:
                 op.info = argval(op, 0) * argval(op, 1)
             case "lshift":
                 op.info = argval(op, 0) << argval(op, 1)
+            case "escape":
+                pass    # do nothing
             case _:
                 raise NotImplementedError(f"Operation {op.name} not implemented")
 
