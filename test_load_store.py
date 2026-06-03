@@ -82,3 +82,19 @@ var2 = escape(var1)
     """
 
     assert bb_to_str(opt_bb).strip() == expected.strip()
+
+
+def test_store_after_store():
+    bb = Block()
+    arg1 = bb.getarg(0)
+    bb.store(arg1, 0, 5)
+    bb.store(arg1, 0, 5)
+
+    opt_bb = optimize_load_store(bb)
+
+    expected = """
+var0 = getarg(0)
+var1 = store(var0, 0, 5)
+    """
+
+    assert bb_to_str(opt_bb).strip() == expected.strip()
