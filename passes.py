@@ -149,13 +149,19 @@ def optimize_load_store(bb: Block) -> Block:
     compile_time_heap: Dict[Tuple[Value, int], Value] = {}
     for op in bb: 
         if op.name == "store":
+            obj = op.arg(0)
             offset = get_num(op, 1)
+            new_val = op.arg(2)
+
             # Re-model the heap 
             compile_time_heap = {
                 (obj, offset_): val 
                 for (obj, offset_), val in compile_time_heap.items() 
                 if offset_ != offset
             }
+
+            # Update new info from store
+            compile_time_heap[(obj, offset)] = new_val
         elif op.name == "load":
             obj = op.arg(0)
             offset = get_num(op, 1)
