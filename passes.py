@@ -1,3 +1,5 @@
+from typing import Dict, Tuple
+
 from ir import Value, Constant, Operation, Block
 from interpret import Obj, VirtualObj, get_num, argval
 
@@ -139,4 +141,23 @@ def alloc_removal(bb: Block) -> Block:
 
 
 def optimize_load_store(bb: Block) -> Block:
-    return bb
+    opt_bb = Block()
+
+    # Model the heap at compile time 
+    # Key: (object, offset) pair. Offset is address of obj 
+    # Value: a prev SSA value we know exists at that address
+    compile_time_heap: Dict[Tuple[Value, int], Value] = {}
+    for op in bb: 
+        if op.name == "load":
+            obj = op.arg(0)
+            offset = get_num(op, 1)
+            load_info = (obj, offset)
+            if prev := compile_time_heap.get(load_info):
+                op.make_equal_to(prev)
+                continue
+
+            compile_time_heap[load_info] = op
+        
+        opt_bb.append(op)
+
+    return opt_bb
